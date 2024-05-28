@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --account=rrg-pbellec
 #SBATCH --job-name=fmriprep_study-cneuromod.mutemusic_sub-02_ses-001.job
-#SBATCH --output=/localscratch/bpinsard-beluga4/cneuromod.mutemusic.fmriprep/code/fmriprep_study-cneuromod.mutemusic_sub-02_ses-001.out
-#SBATCH --error=/localscratch/bpinsard-beluga4/cneuromod.mutemusic.fmriprep/code/fmriprep_study-cneuromod.mutemusic_sub-02_ses-001.err
+#SBATCH --output=/lustre04/scratch/bpinsard/mutemusic.fmriprep/code/fmriprep_study-cneuromod.mutemusic_sub-02_ses-001.out
+#SBATCH --error=/lustre04/scratch/bpinsard/mutemusic.fmriprep/code/fmriprep_study-cneuromod.mutemusic_sub-02_ses-001.err
 #SBATCH --time=18:00:00
 #SBATCH --cpus-per-task=12
 #SBATCH --mem-per-cpu=4096M
@@ -18,7 +18,7 @@ set -e -u -x
 
 export LOCAL_DATASET=$SLURM_TMPDIR/${SLURM_JOB_NAME//-/}/
 export SINGULARITYENV_TEMPLATEFLOW_HOME="${LOCAL_DATASET}/sourcedata/templateflow/"
-flock --verbose /lustre03/project/rrg-pbellec/ria-beluga/alias/cneuromod.mutemusic.fmriprep/.datalad_lock datalad clone ria+file:///lustre03/project/rrg-pbellec/ria-beluga#~cneuromod.mutemusic.fmriprep@dev $LOCAL_DATASET
+flock --verbose /lustre03/project/rrg-pbellec/ria-beluga/alias/cneuromod.mutemusic.fmriprep/.datalad_lock datalad clone ria+file:///lustre03/project/rrg-pbellec/ria-beluga#~cneuromod.mutemusic.fmriprep $LOCAL_DATASET
 cd $LOCAL_DATASET
 datalad get -s ria-beluga-storage -J 4 -n -r -R1 . # get sourcedata/* containers
 datalad get -s ria-beluga-storage -J 4 -r sourcedata/templateflow/tpl-{MNI152NLin2009cAsym,OASIS30ANTs,fsLR,fsaverage,MNI152NLin6Asym}
