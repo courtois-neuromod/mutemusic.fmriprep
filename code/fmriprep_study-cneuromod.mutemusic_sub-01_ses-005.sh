@@ -3,7 +3,7 @@
 #SBATCH --job-name=fmriprep_study-cneuromod.mutemusic_sub-01_ses-005.job
 #SBATCH --output=/lustre04/scratch/bpinsard/mutemusic.fmriprep/code/fmriprep_study-cneuromod.mutemusic_sub-01_ses-005.out
 #SBATCH --error=/lustre04/scratch/bpinsard/mutemusic.fmriprep/code/fmriprep_study-cneuromod.mutemusic_sub-01_ses-005.err
-#SBATCH --time=18:00:00
+#SBATCH --time=12:00:00
 #SBATCH --cpus-per-task=12
 #SBATCH --mem-per-cpu=4096M
 #SBATCH --tmp=100G
@@ -27,15 +27,13 @@ if [ -d sourcedata/smriprep ] ; then
 fi
 git submodule foreach --recursive git annex dead here
 git checkout -b $SLURM_JOB_NAME
-# when freesurfer is ran in the meantime as s/fmriprep
 if [ -d sourcedata/freesurfer ] ; then
   git -C sourcedata/freesurfer checkout -b $SLURM_JOB_NAME
 fi
 
-git submodule foreach  --recursive bash -c "git-annex enableremote ria-beluga-storage | true"
-git submodule foreach  --recursive bash -c "git-annex enableremote ria-beluga-storage-local | true"
+git submodule foreach  --recursive git-annex enableremote ria-beluga-storage
 
-datalad containers-run -m 'fMRIPrep_sub-01/ses-005' -n bids-fmriprep --input sourcedata/templateflow/tpl-MNI152NLin2009cAsym/ --input sourcedata/templateflow/tpl-OASIS30ANTs/ --input sourcedata/templateflow/tpl-fsLR/ --input sourcedata/templateflow/tpl-fsaverage/ --input sourcedata/templateflow/tpl-MNI152NLin6Asym/ --output . --input 'sourcedata/cneuromod.mutemusic/sub-01/ses-005/fmap/' --input 'sourcedata/cneuromod.mutemusic/sub-01/ses-005/func/'  --input 'sourcedata/smriprep/sub-01/anat/' --input sourcedata/smriprep/sourcedata/freesurfer/fsaverage/ --input sourcedata/smriprep/sourcedata/freesurfer/sub-01/ -- -w ./workdir --participant-label 01 --anat-derivatives sourcedata/smriprep --fs-subjects-dir sourcedata/smriprep/sourcedata/freesurfer --bids-filter-file code/fmriprep_study-cneuromod.mutemusic_sub-01_ses-005_bids_filters.json --output-layout bids --ignore slicetiming --use-syn-sdc --output-spaces MNI152NLin2009cAsym T1w:res-iso2mm --cifti-output 91k --notrack --write-graph --skip_bids_validation --omp-nthreads 8 --nprocs 12 --mem_mb 45056 --fs-license-file code/freesurfer.license  sourcedata/cneuromod.mutemusic ./ participant 
+datalad containers-run -m 'fMRIPrep_sub-01/ses-005' -n bids-fmriprep --input sourcedata/templateflow/tpl-MNI152NLin2009cAsym/ --input sourcedata/templateflow/tpl-OASIS30ANTs/ --input sourcedata/templateflow/tpl-fsLR/ --input sourcedata/templateflow/tpl-fsaverage/ --input sourcedata/templateflow/tpl-MNI152NLin6Asym/ --output . --input 'sourcedata/cneuromod.mutemusic/sub-01/ses-005/fmap/' --input 'sourcedata/cneuromod.mutemusic/sub-01/ses-005/func/' --input 'sourcedata/smriprep/sub-01/anat/' --input sourcedata/smriprep/sourcedata/freesurfer/fsaverage/ --input sourcedata/smriprep/sourcedata/freesurfer/sub-01/ -- -w ./workdir --participant-label 01 --anat-derivatives ./sourcedata/smriprep --fs-subjects-dir ./sourcedata/smriprep/sourcedata/freesurfer --bids-filter-file code/fmriprep_study-cneuromod.mutemusic_sub-01_ses-005_bids_filters.json --output-layout bids --ignore slicetiming --use-syn-sdc --output-spaces MNI152NLin2009cAsym T1w:res-iso2mm --cifti-output 91k --notrack --write-graph --skip_bids_validation --omp-nthreads 8 --nprocs 12 --mem_mb 49152 --fs-license-file code/freesurfer.license sourcedata/cneuromod.mutemusic ./ participant 
 fmriprep_exitcode=$?
 
 flock --verbose /lustre03/project/rrg-pbellec/ria-beluga/alias/cneuromod.mutemusic.fmriprep/.datalad_lock datalad push -d ./ --to origin
